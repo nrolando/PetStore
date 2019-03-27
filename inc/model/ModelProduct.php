@@ -58,7 +58,7 @@ class ModelProduct
         }
         
         // Get DB connection instance
-        $this->dbConn = PdoDbConn::getInstance(Helper::$dbHost, Helper::$dbName, Helper::$dbUser, Helper::$dbPw);
+        $this->dbConn = PdoDbConn::getInstance();
         
         if(isset($this->id)) {
             //Update product
@@ -90,7 +90,7 @@ class ModelProduct
      */
     public function load($id) {
         // Get DB connection instance
-        $this->dbConn = PdoDbConn::getInstance(Helper::$dbHost, Helper::$dbName, Helper::$dbUser, Helper::$dbPw);
+        $this->dbConn = PdoDbConn::getInstance();
         
         $query = "SELECT `name`, pet_type, item_type, color, lifespan, age, `price` FROM "
             . $this->getDbNameTbl() . " WHERE `id` = " . $id;

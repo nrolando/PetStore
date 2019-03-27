@@ -1,20 +1,27 @@
 <?php
 /* Code by: Nick Rolando */
 namespace PetStoreInc\db;
+use PetStoreInc\Helper;
 
 /* Description: Implements mysql PDO functionality. */
 class PdoDbConn
 {
-    private static $instance = null;
-    private static $_host = "";
-    private static $_db = "";
-    private static $_user ="";
-    private static $_pwd ="";
-    private static $_conn = null;
+    private static $instance;
+    private static $_host;
+    private static $_db;
+    private static $_user;
+    private static $_pwd;
+    private static $_conn;
     
     /* contructor */
     private function __construct() {
+        self::$_host = Helper::$dbHost;
+        self::$_db = Helper::$dbName;
+        self::$_user = Helper::$dbUser;
+        self::$_pwd = Helper::$dbPw;
         
+        self::$instance = null;
+        self::$_conn = null;
     }
     
     /* destructor */
@@ -22,33 +29,20 @@ class PdoDbConn
         self::closeDB();
     }
     
-    public static function getInstance($host = "", $db = "", $user = "", $pwd = "") {
-        if(empty($host)) {
-            if(self::$instance == null) {
-                throw new \Exception("No DB instance or connection parameters passed.");
-            } else {
-                return self::$instance;
-            }
+    public static function getInstance() {
+        if(self::$instance == null) {
+            self::__openDB();
+            self::$instance = new PdoDbConn();
+            return self::$instance;
         } else {
-            if(self::$instance == null) {
-                self::$_host = $host;
-                self::$_db = $db;
-                self::$_user = $user;
-                self::$_pwd = $pwd;
-                self::__openDB();
-                self::$instance = new PdoDbConn();
-                return self::$instance;
-            } else {
-                return self::$instance;
-            }
+            return self::$instance;
         }
-        
     }
 
     /* Initialize $this->_conn to an open PDO connection.
      * throws Exception on failure
      */
-    protected static function __openDB(){
+    private static function __openDB(){
         $connString = 'mysql:host='.self::$_host.';dbname='.self::$_db;
         try {
             self::$_conn = new \PDO($connString, self::$_user, self::$_pwd);
