@@ -2,6 +2,7 @@
 /* Code by: Nick Rolando */
 namespace PetStoreShell;
 require_once dirname(__dir__) . '\vendor\autoload.php';
+use PetStoreInc\Helper;
 use PetStoreInc\model\ModelProduct;
 
 class QueryStore extends ShellAbstract
@@ -9,10 +10,11 @@ class QueryStore extends ShellAbstract
     public function __construct() {
         parent::__construct();
 
-        $this->validCommands = array('add', 'update', 'delete', 'list');
+        $this->validCommands = array('add', 'update', 'delete', 'list', 'help');
     }
 
-    /* throws new Exception on failure
+    /**
+     * throws new Exception on failure
      */
     public function run() {
         $this->parseArgs();
@@ -56,12 +58,16 @@ class QueryStore extends ShellAbstract
                 break;
             case 'list':
                 break;
+            case 'help':
+                Helper::runHelp();
+                break;
             default:
                 break;
         }
     }
 
-    /* throws new Exception on failure
+    /**
+     * throws new Exception on failure
      */
     public function validateArgs() {
         $areParamsValid = true;
@@ -84,6 +90,8 @@ class QueryStore extends ShellAbstract
                 break;
             case 'list':
                 break;
+            case 'help':
+                break;
             default:
                 throw new \Exception("This line should not have been reached; bug in code.");
         }
@@ -94,19 +102,11 @@ class QueryStore extends ShellAbstract
     }
 }
 
-function runHelp() {
-    echo "Usage: php QueryStore.php --[command] [optional parameter 1] [optional parameter 2] [etc..]" . PHP_EOL;
-    echo "Valid Commands: add, update, delete, list." . PHP_EOL;
-    echo "Params for `add`: pet_type, item_type, name, color, lifespan, age, price" . PHP_EOL;
-    echo "Params for `update`: id, pet_type, item_type, name, color, lifespan, age, price" . PHP_EOL;
-    echo "Params for `delete`: id" . PHP_EOL;
-}
-
 try {
     $qs = new QueryStore();
     $qs->run();
 } catch(\Exception $e) {
     echo "Error: " . $e->getMessage() . PHP_EOL;
-    runHelp();
+    Helper::runHelp();
 }
 echo "Goodbye" . PHP_EOL;

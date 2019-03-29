@@ -12,6 +12,7 @@ class PdoDbConn
     private static $_user;
     private static $_pwd;
     private static $_conn;
+    public static $_isDbOpen;
     
     /* contructor */
     private function __construct() {
@@ -22,6 +23,7 @@ class PdoDbConn
         
         self::$instance = null;
         self::$_conn = null;
+        self::$_isDbOpen = false;
     }
     
     /* destructor */
@@ -31,7 +33,6 @@ class PdoDbConn
     
     public static function getInstance() {
         if(self::$instance == null) {
-            self::__openDB();
             self::$instance = new PdoDbConn();
             return self::$instance;
         } else {
@@ -39,10 +40,11 @@ class PdoDbConn
         }
     }
 
-    /* Initialize $this->_conn to an open PDO connection.
+    /**
+     * Initialize $this->_conn to an open PDO connection.
      * throws Exception on failure
      */
-    private static function __openDB(){
+    public static function __openDB(){
         $connString = 'mysql:host='.self::$_host.';dbname='.self::$_db;
         try {
             self::$_conn = new \PDO($connString, self::$_user, self::$_pwd);
@@ -50,12 +52,14 @@ class PdoDbConn
         } catch(\PDOException $e) {
             throw new \Exception($e->getMessage());
         }
+        self::$_isDbOpen = true;
     }
     
     public static function closeDB()
     {
         if(isset(self::$_conn)) {
             self::$_conn = null;
+            self::$_isDbOpen = false;
         }
     }
     
@@ -103,23 +107,22 @@ class PdoDbConn
         // TO-DO: Build collection of rows to return and close PDOStatement $stmt
     }
 
-    /* Performs a parameterized manipulation query. 
-     * $query: SQL query where parameters to be bound are named or question marked
-     * $para: An array of the parameters to be bound. If $query uses named parameters, then the array keys much match the named parameters.
-     * @return true on success or false on failure. */
+    /**
+     * Performs a parameterized manipulation query. Throws Exception on failure.
+     * 
+     * @param query SQL query where parameters to be bound are named or question marked
+     * @param para An array of the parameters to be bound. If $query uses named parameters, then the array keys much match the named parameters.
+     */
     public static function doParaManipQry($query, $para = array()) {
         try {
             $stmt = self::$_conn->prepare($query);
             if($stmt === false) {
                 $errArr = self::$_conn->errorInfo();
-                self::$_err_msg = $errArr[2];
-                return false;
+                throw new \Exception($errArr[2]);
             }
             $stmt->execute($para);
         } catch(\PDOException $e) {
-            self::$_err_msg = $e->getMessage();
-            return false;
+            throw new \Exception($e->getMessage());
         }
-        return true;
     }
 }

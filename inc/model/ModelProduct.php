@@ -59,11 +59,23 @@ class ModelProduct
         
         // Get DB connection instance
         $this->dbConn = PdoDbConn::getInstance();
+        if(!PdoDbConn::$_isDbOpen) {
+            $this->dbConn->__openDB();
+        }
         
         if(isset($this->id)) {
             //Update product
-            $query = "UPDATE " . $this->getDbNameTbl() . " SET `name` = ?, pet_type = ?, item_type = ?, color = ?, "
-                . "lifespan = ?, age = ?, price = ? WHERE `id` = " . $this->id;
+            $query = "UPDATE " . $this->getDbNameTbl() . " SET `name` = :name, pet_type = :petType, item_type = :itemType, color = :color, "
+                . "lifespan = :lifespan, age = :age, price = :price WHERE `id` = " . $this->id;
+            $this->dbConn->doParaManipQry($query, array(
+                'name' => $this->name,
+                'petType' => $this->petType,
+                'itemType' => $this->itemType,
+                'color' => $this->color,
+                'lifespan' => $this->lifespan,
+                'age' => $this->age,
+                'price' => $this->price
+            ));
         } else {
             //Insert new product and set id
             $query = "INSERT INTO " . $this->getDbNameTbl() . " (`name`, pet_type, item_type, color, lifespan, `age`, `price`) "
@@ -91,6 +103,9 @@ class ModelProduct
     public function load($id) {
         // Get DB connection instance
         $this->dbConn = PdoDbConn::getInstance();
+        if(!PdoDbConn::$_isDbOpen) {
+            $this->dbConn->__openDB();
+        }
         
         $query = "SELECT `name`, pet_type, item_type, color, lifespan, age, `price` FROM "
             . $this->getDbNameTbl() . " WHERE `id` = " . $id;
