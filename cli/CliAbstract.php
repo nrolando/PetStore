@@ -1,8 +1,11 @@
 <?php
-/* Code by: Nick Rolando */
-namespace PetStoreShell;
+/**
+ * Code by: Nick Rolando
+ * 
+ */
+namespace PetStoreCli;
 
-abstract class ShellAbstract
+abstract class CliAbstract
 {
     protected $cmd;
     protected $cmdParams;

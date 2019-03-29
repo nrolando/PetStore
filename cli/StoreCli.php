@@ -1,11 +1,14 @@
 <?php
-/* Code by: Nick Rolando */
-namespace PetStoreShell;
+/**
+ * Code by: Nick Rolando
+ * Desc: Run script to query or manipulate store database (check --help command for assistance)
+ */
+namespace PetStoreCli;
 require_once dirname(__dir__) . '\vendor\autoload.php';
 use PetStoreInc\Helper;
 use PetStoreInc\model\ModelProduct;
 
-class QueryStore extends ShellAbstract
+class StoreCli extends CliAbstract
 {
     public function __construct() {
         parent::__construct();
@@ -89,6 +92,8 @@ class QueryStore extends ShellAbstract
                 if(count($this->cmdParams) !== 1) { $areParamsValid = false; }
                 break;
             case 'list':
+                // 'list' can come with a 'sort' and/or 'filter parameter
+                
                 break;
             case 'help':
                 break;
@@ -103,8 +108,8 @@ class QueryStore extends ShellAbstract
 }
 
 try {
-    $qs = new QueryStore();
-    $qs->run();
+    $sc = new StoreCli();
+    $sc->run();
 } catch(\Exception $e) {
     echo "Error: " . $e->getMessage() . PHP_EOL;
     Helper::runHelp();
