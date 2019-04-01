@@ -60,6 +60,7 @@ class StoreCli extends CliAbstract
                 echo "Deleted product " . $this->cmdParams[0] . PHP_EOL;
                 break;
             case 'list':
+                
                 break;
             case 'help':
                 Helper::runHelp();
@@ -93,7 +94,12 @@ class StoreCli extends CliAbstract
                 break;
             case 'list':
                 // 'list' can come with a 'sort' and/or 'filter parameter
-                
+                if(isset($this->cmdParams[0]) && ($this->cmdParams[0] !== "sort" && $this->cmdParams[0] !== "filter")) {
+                    $areParamsValid = false;
+                }
+                if(isset($this->cmdParams[2]) && ($this->cmdParams[2] !== "sort" && $this->cmdParams[2] !== "filter")) {
+                    $areParamsValid = false;
+                }
                 break;
             case 'help':
                 break;

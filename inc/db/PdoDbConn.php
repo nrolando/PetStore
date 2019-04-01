@@ -12,7 +12,7 @@ class PdoDbConn
     private static $_user;
     private static $_pwd;
     private static $_conn;
-    public static $_isDbOpen;
+    private static $_isDbOpen;
     
     /* contructor */
     private function __construct() {
@@ -61,6 +61,10 @@ class PdoDbConn
             self::$_conn = null;
             self::$_isDbOpen = false;
         }
+    }
+    
+    public static function isDbOpen() {
+        return self::$_isDbOpen;
     }
     
     /* doQuery() - PDO Object http://php.net/manual/en/book.pdo.php
