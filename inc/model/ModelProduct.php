@@ -18,6 +18,8 @@ class ModelProduct
     private $age;
     private $price;
     
+    private $oldProductDiscount;
+    
     public function __construct() {
         $this->petType = null;
         $this->itemType = null;
@@ -26,6 +28,8 @@ class ModelProduct
         $this->lifespan = null;
         $this->age = null;
         $this->price = null;
+        
+        $this->oldProductDiscount = .5;
     }
     
     /* Set all product attributes.
@@ -59,7 +63,7 @@ class ModelProduct
         
         // Get DB connection instance
         $this->dbConn = PdoDbConn::getInstance();
-        if(!PdoDbConn::$_isDbOpen) {
+        if(!PdoDbConn::isDbOpen()) {
             $this->dbConn->__openDB();
         }
         
@@ -103,7 +107,7 @@ class ModelProduct
     public function load($id) {
         // Get DB connection instance
         $this->dbConn = PdoDbConn::getInstance();
-        if(!PdoDbConn::$_isDbOpen) {
+        if(!PdoDbConn::isDbOpen()) {
             $this->dbConn->__openDB();
         }
         
@@ -143,5 +147,16 @@ class ModelProduct
     
     private function getDbNameTbl() {
         return "`" . Helper::$dbName . "`.`" . Helper::$tblName_product . "`";
+    }
+    
+    public function getPrice() {
+        if(!isset($this->lifespan) || $this->lifespan == 0) {
+            return $this->price;
+        }
+        if($this->age > ($this->lifespan/2)) {
+            return ($this->price * $this->oldProductDiscount);
+        } else {
+            return $this->price;
+        }
     }
 }

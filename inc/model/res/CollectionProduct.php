@@ -9,7 +9,9 @@ class CollectionProduct
     // DB Connection Instance
     private $dbConn;
     
+    // An associative array containing queries product collection
     private $_collection;
+    
     private $filters;
     private $sortby;
     private $validFilterKeys;
@@ -54,9 +56,9 @@ class CollectionProduct
                 $filters = explode(',', $filters);
             }
             foreach($filters as $f) {
-                $key = strstr($f, ',', true);
+                $key = strstr($f, '=', true);
                 if(!$this->isFilterKeyValid($key)) { throw new \Exception("Invalid filter key provided."); }
-                $this->filters[$key] = substr($f, strpos($f, '='));
+                $this->filters[$key] = substr($f, (strpos($f, '=') + 1));
                 if($this->filters[$key] === false || empty($this->filters[$key])) { throw new \Exception("No filter value provided."); }
             }
         }
@@ -66,7 +68,7 @@ class CollectionProduct
         }
         
         // Build SQL query
-        $sql = "SELECT * FROM " . Helper::$tblName_product . " ";
+        $sql = "SELECT * FROM " . $this->getProductModelTblName() . " ";
         $sqlParamArray = array();
         if(!empty($this->filters)) {
             $sql .= "WHERE ";
@@ -81,6 +83,12 @@ class CollectionProduct
             $sqlParamArray['sortby'] = $this->sortby;
         }
         
-        //////do para select query....
+        $this->_collection = $this->dbConn->doParaSelectQry($sql, $sqlParamArray);
+        
+        $this->dbConn->closeDB();
+    }
+    
+    private function getProductModelTblName() {
+        return "`" . Helper::$dbName . "`.`" . Helper::$tblName_product . "`";
     }
 }

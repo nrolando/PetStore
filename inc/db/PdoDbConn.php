@@ -84,7 +84,9 @@ class PdoDbConn
         } catch(\PDOException $e) {
             throw new \Exception($e->getMessage());
         }
+        
         $stmt->closeCursor();
+        
         return $row;
     }
     
@@ -95,20 +97,21 @@ class PdoDbConn
      * throws Exception on failure
      */
     public static function doParaSelectQry($query, $para = array()) {
-        /*try {
+        try {
             $stmt = self::$_conn->prepare($query);
             if($stmt === false) {
                 $errArr = self::$_conn->errorInfo();
-                self::$_err_msg = $errArr[2];
-                return false;
+                throw new \Exception($errArr[2]);
             }
             $stmt->execute($para);
         } catch(\PDOException $e) {
-            self::$_err_msg = $e->getMessage();
-            return false;
-        }*/
+            throw new \Exception($e->getMessage());
+        }
         
-        // TO-DO: Build collection of rows to return and close PDOStatement $stmt
+        $rs = $stmt->fetchAll();
+        $stmt->closeCursor();
+        
+        return $rs;
     }
 
     /**
