@@ -4,5 +4,8 @@
             "PetStoreCli\\": "cli/",
             "PetStoreInc\\": "inc/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "8"
     }
 }
