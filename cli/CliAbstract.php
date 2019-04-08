@@ -36,5 +36,5 @@ abstract class CliAbstract
     }
     
     abstract public function run();
-    abstract public function validateArgs();
+    abstract public function validateAndParseArgs();
 }
