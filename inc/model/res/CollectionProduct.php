@@ -17,11 +17,11 @@ class CollectionProduct
     private $validFilterKeys;
     private $validSortBy;
     
-    public function __construct() {
+    public function __construct(array $p_products = []) {
         $this->filters = array();
         $this->sortby = '';
-        $this->_collection = null;
         $this->dbConn = null;
+        $this->_collection = $p_products;
         
         $this->validFilterKeys = array('pet_type', 'item_type', 'color');
         $this->validSortBy = array('pet_type', 'item_type', 'name', 'color', 'lifespan', 'age', 'price');
@@ -45,9 +45,8 @@ class CollectionProduct
      * @param type $sortby Attribute to sort by, e.g. price
      */
     public function loadCollection($filters = '', $sortby = 'id') {
-        $this->dbConn = PdoDbConn::getInstance();
-        if(!$this->dbConn->isDbOpen()) {
-            $this->dbConn->__openDB();
+        if(is_null($this->dbConn)) {
+            $this->dbConn = PdoDbConn::getInstance();
         }
         
         if(!empty($filters)) {
@@ -84,8 +83,6 @@ class CollectionProduct
         }
         
         $this->_collection = $this->dbConn->doParaSelectQry($sql, $sqlParamArray);
-        
-        $this->dbConn->closeDB();
     }
     
     private function getProductModelTblName() {

@@ -7,28 +7,29 @@ use PetStoreInc\Helper;
 class PdoDbConn
 {
     private static $instance;
-    private static $_host;
-    private static $_db;
-    private static $_user;
-    private static $_pwd;
-    private static $_conn;
-    private static $_isDbOpen;
+    private $_host;
+    private $_db;
+    private $_user;
+    private $_pwd;
+    private $_conn;
+    private $_isDbOpen;
     
     /* contructor */
     private function __construct() {
-        self::$_host = Helper::$dbHost;
-        self::$_db = Helper::$dbName;
-        self::$_user = Helper::$dbUser;
-        self::$_pwd = Helper::$dbPw;
+        $this->_host = Helper::$dbHost;
+        $this->_db = Helper::$dbName;
+        $this->_user = Helper::$dbUser;
+        $this->_pwd = Helper::$dbPw;
         
-        self::$instance = null;
-        self::$_conn = null;
-        self::$_isDbOpen = false;
+        $this->_conn = null;
+        $this->_isDbOpen = false;
+        
+        $this->openDB();
     }
     
     /* destructor */
     public function __destruct() {
-        self::closeDB();
+        $this->closeDB();
     }
     
     public static function getInstance() {
@@ -41,30 +42,32 @@ class PdoDbConn
     }
 
     /**
-     * Initialize $this->_conn to an open PDO connection.
+     * Initialize $this->_conn to an open PDO connection. Should only be called in __construct()
      * throws Exception on failure
      */
-    public static function __openDB(){
-        $connString = 'mysql:host='.self::$_host.';dbname='.self::$_db;
+    private function openDB() {
+        $connString = 'mysql:host='.$this->_host.';dbname='.$this->_db;
         try {
-            self::$_conn = new \PDO($connString, self::$_user, self::$_pwd);
-            self::$_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);   
+            $this->_conn = new \PDO($connString, $this->_user, $this->_pwd);
+            $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);   
         } catch(\PDOException $e) {
             throw new \Exception($e->getMessage());
         }
-        self::$_isDbOpen = true;
+        $this->_isDbOpen = true;
     }
     
-    public static function closeDB()
-    {
-        if(isset(self::$_conn)) {
-            self::$_conn = null;
-            self::$_isDbOpen = false;
+    /**
+     * Close open PDO connection on $this->_conn. Currently only planning to call in __destruct()
+     */
+    private function closeDB() {
+        if(isset($this->_conn)) {
+            $this->_conn = null;
+            $this->_isDbOpen = false;
         }
     }
     
-    public static function isDbOpen() {
-        return self::$_isDbOpen;
+    public function isDbOpen() {
+        return $this->_isDbOpen;
     }
     
     /* doQuery() - PDO Object http://php.net/manual/en/book.pdo.php
@@ -72,11 +75,11 @@ class PdoDbConn
      * Should be called within a try/catch block.
      * Return: Queried row or false when no row was found.
      * Throws: Exception on failure */
-    public static function doQuery($sql){
+    public function doQuery($sql){
         try {
-            $stmt = self::$_conn->query($sql);
+            $stmt = $this->_conn->query($sql);
             if($stmt === false) {
-                $errArr = self::$_conn->errorInfo();
+                $errArr = $this->_conn->errorInfo();
                 throw new \Exception($errArr[2]);
             }
             //$stmt->execute(array('batchId' => $batchId));
@@ -96,11 +99,11 @@ class PdoDbConn
      * Returns: ??
      * throws Exception on failure
      */
-    public static function doParaSelectQry($query, $para = array()) {
+    public function doParaSelectQry($query, $para = array()) {
         try {
-            $stmt = self::$_conn->prepare($query);
+            $stmt = $this->_conn->prepare($query);
             if($stmt === false) {
-                $errArr = self::$_conn->errorInfo();
+                $errArr = $this->_conn->errorInfo();
                 throw new \Exception($errArr[2]);
             }
             $stmt->execute($para);
@@ -120,11 +123,11 @@ class PdoDbConn
      * @param query SQL query where parameters to be bound are named or question marked
      * @param para An array of the parameters to be bound. If $query uses named parameters, then the array keys much match the named parameters.
      */
-    public static function doParaManipQry($query, $para = array()) {
+    public function doParaManipQry($query, $para = array()) {
         try {
-            $stmt = self::$_conn->prepare($query);
+            $stmt = $this->_conn->prepare($query);
             if($stmt === false) {
-                $errArr = self::$_conn->errorInfo();
+                $errArr = $this->_conn->errorInfo();
                 throw new \Exception($errArr[2]);
             }
             $stmt->execute($para);

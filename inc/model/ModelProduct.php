@@ -18,9 +18,11 @@ class ModelProduct
     private $age;
     private $price;
     
-    private $oldProductDiscount;
+    private const OLD_PRODUCT_DISCOUNT = .5;
     
     public function __construct() {
+        $this->dbConn = null;
+        $this->id = null;
         $this->petType = null;
         $this->itemType = null;
         $this->name = null;
@@ -28,8 +30,6 @@ class ModelProduct
         $this->lifespan = null;
         $this->age = null;
         $this->price = null;
-        
-        $this->oldProductDiscount = .5;
     }
     
     /* Set all product attributes.
@@ -62,9 +62,8 @@ class ModelProduct
         }
         
         // Get DB connection instance
-        $this->dbConn = PdoDbConn::getInstance();
-        if(!PdoDbConn::isDbOpen()) {
-            $this->dbConn->__openDB();
+        if(is_null($this->dbConn)) {
+            $this->dbConn = PdoDbConn::getInstance();
         }
         
         if(isset($this->id)) {
@@ -106,9 +105,8 @@ class ModelProduct
      */
     public function load($id) {
         // Get DB connection instance
-        $this->dbConn = PdoDbConn::getInstance();
-        if(!PdoDbConn::isDbOpen()) {
-            $this->dbConn->__openDB();
+        if(is_null($this->dbConn)) {
+            $this->dbConn = PdoDbConn::getInstance();
         }
         
         $query = "SELECT `name`, pet_type, item_type, color, lifespan, age, `price` FROM "
@@ -154,7 +152,7 @@ class ModelProduct
             return $this->price;
         }
         if($this->age > ($this->lifespan/2)) {
-            return ($this->price * $this->oldProductDiscount);
+            return ($this->price * self::OLD_PRODUCT_DISCOUNT);
         } else {
             return $this->price;
         }
