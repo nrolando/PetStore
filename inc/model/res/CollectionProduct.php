@@ -20,7 +20,7 @@ class CollectionProduct
     public function __construct(array $p_products = []) {
         $this->filters = array();
         $this->sortby = '';
-        $this->dbConn = null;
+        $this->dbConn = PdoDbConn::getInstance();
         $this->_collection = $p_products;
         
         $this->validFilterKeys = array('pet_type', 'item_type', 'color');
@@ -45,10 +45,6 @@ class CollectionProduct
      * @param type $sortby Attribute to sort by, e.g. price
      */
     public function loadCollection($filters = '', $sortby = 'id') {
-        if(is_null($this->dbConn)) {
-            $this->dbConn = PdoDbConn::getInstance();
-        }
-        
         if(!empty($filters)) {
             // Set filters
             if(!is_array($filters)) {
@@ -67,7 +63,8 @@ class CollectionProduct
         }
         
         // Build SQL query
-        $sql = "SELECT * FROM " . $this->getProductModelTblName() . " ";
+        $sql = "SELECT `id`, `name`, pet_type as 'petType', item_type as 'itemType', `color`, `lifespan`, `age`, `price` FROM " 
+            . $this->getProductModelTblName() . " ";
         $sqlParamArray = array();
         if(!empty($this->filters)) {
             $sql .= "WHERE ";
@@ -82,7 +79,11 @@ class CollectionProduct
             $sqlParamArray['sortby'] = $this->sortby;
         }
         
-        $this->_collection = $this->dbConn->doParaSelectQry($sql, $sqlParamArray);
+        $rs = $this->dbConn->doParaSelectQry($sql, $sqlParamArray);
+        foreach($rs as $row) {
+            $mp = new ModelProduct();
+            $this->_collection[] = $mp->setData($row);
+        }
     }
     
     private function getProductModelTblName() {

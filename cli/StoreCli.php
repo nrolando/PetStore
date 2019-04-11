@@ -23,7 +23,7 @@ class StoreCli extends CliAbstract
     }
 
     /**
-     * throws new Exception on failure
+     * @throws \Exception
      */
     public function run() {
         $this->parseArgs();
@@ -62,18 +62,16 @@ class StoreCli extends CliAbstract
             case 'delete':
                 $pm = new ModelProduct();
                 $pm->load($this->cmdParams[0]);
-                $pm->deleteAndUnload();
+                $pm->delete();
                 echo "Deleted product " . $this->cmdParams[0] . PHP_EOL;
                 break;
             case 'list':
                 $products = new \PetStoreInc\model\res\CollectionProduct();
-                $pm = new \PetStoreInc\model\ModelProduct();
                 $products->loadCollection($this->arg_list_filters, $this->arg_list_sort);
                 foreach($products->getCollection() as $prod) {
-                    $pm->load($prod['id']);
-                    echo sprintf("%-25s", "Name: " . $prod['name'] . ";") . sprintf("%-20s", "Item Type: " . $prod['item_type'] . ";")
-                        . sprintf("%-20s", "Pet Type: " . $prod['pet_type'] . ";") . sprintf("%-15s", "Price: $" . $pm->getPrice() . ";")
-                        . sprintf("%-20s", "Color: " . $prod["color"] . ";") . PHP_EOL;
+                    echo sprintf("%-25s", "Name: " . $prod->getname() . ";") . sprintf("%-20s", "Item Type: " . $prod->getitemType() . ";")
+                        . sprintf("%-20s", "Pet Type: " . $prod->getpetType() . ";") . sprintf("%-15s", "Price: $" . $prod->getPrice() . ";")
+                        . sprintf("%-20s", "Color: " . $prod->getcolor() . ";") . PHP_EOL;
                 }
                 break;
             case 'help':

@@ -1,76 +1,31 @@
 <?php
+/**
+ * Code by: Nick Rolando
+ */
 namespace PetStoreInc\model;
 use PetStoreInc\Helper;
 use PetStoreInc\db\PdoDbConn;
 
-class ModelProduct
+class ModelProduct extends ModelAbstract
 {
-    // DB Connection Instance
-    private $dbConn;
-    
-    // Product Attributes
-    private $id;
-    private $petType;
-    private $itemType;
-    private $name;
-    private $color;
-    private $lifespan;
-    private $age;
-    private $price;
-    
     private const OLD_PRODUCT_DISCOUNT = .5;
     
-    public function __construct() {
-        $this->dbConn = null;
-        $this->id = null;
-        $this->petType = null;
-        $this->itemType = null;
-        $this->name = null;
-        $this->color = null;
-        $this->lifespan = null;
-        $this->age = null;
-        $this->price = null;
-    }
-    
-    /* Set all product attributes.
-     * param: Must be array with keys: 'petType', 'itemType', 'name', 'color', 'lifespan', 'age', 'price'
-     * throws Exception on error
-     */
-    public function setData(array $pd) {
-        if(!isset($pd['petType']) || !isset($pd['itemType']) || !isset($pd['name']) || !isset($pd['color']) || !isset($pd['lifespan']) || !isset($pd['age']) || !isset($pd['price'])) {
-            throw new \Exception("Invalid parameters passed to \\PetStoreInc\\model\\ModelProduct::setData()");
-        }
-        
-        $this->petType = $pd['petType'];
-        $this->itemType = $pd['itemType'];
-        $this->name = $pd['name'];
-        $this->color = $pd['color'];
-        $this->lifespan = $pd['lifespan'];
-        $this->age = $pd['age'];
-        $this->price = $pd['price'];
-        
-        return $this;
-    }
-    
-    /* Desc: Add a product to the db.
-     * param: array('pet_type', 'item_type', 'name', 'color', 'lifespan', 'age', 'price')
-     * throws Exception on error.
+    /**
+     * Add a product to the db.
+     * @throws \Exception
      */
     public function save() {
         if(!isset($this->petType) || !isset($this->itemType) || !isset($this->name) || !isset($this->color) || !isset($this->lifespan) || !isset($this->age) || !isset($this->price)) {
             throw new \Exception("Cannot save product due to insufficient data.");
         }
         
-        // Get DB connection instance
-        if(is_null($this->dbConn)) {
-            $this->dbConn = PdoDbConn::getInstance();
-        }
+        $dbConn = PdoDbConn::getInstance();
         
         if(isset($this->id)) {
             //Update product
             $query = "UPDATE " . $this->getDbNameTbl() . " SET `name` = :name, pet_type = :petType, item_type = :itemType, color = :color, "
                 . "lifespan = :lifespan, age = :age, price = :price WHERE `id` = " . $this->id;
-            $this->dbConn->doParaManipQry($query, array(
+            $dbConn->doParaManipQry($query, array(
                 'name' => $this->name,
                 'petType' => $this->petType,
                 'itemType' => $this->itemType,
@@ -83,7 +38,7 @@ class ModelProduct
             //Insert new product and set id
             $query = "INSERT INTO " . $this->getDbNameTbl() . " (`name`, pet_type, item_type, color, lifespan, `age`, `price`) "
                 . "VALUES(:name, :petType, :itemType, :color, :lifespan, :age, :price)";
-            $this->dbConn->doParaManipQry($query, array(
+            $dbConn->doParaManipQry($query, array(
                 'name' => $this->name,
                 'petType' => $this->petType,
                 'itemType' => $this->itemType,
@@ -93,29 +48,31 @@ class ModelProduct
                 'price' => $this->price
             ));
             $query = "SELECT LAST_INSERT_ID() as last_id;";
-            $r = $this->dbConn->doQuery($query);
+            $r = $dbConn->doQuery($query);
             $this->id = $r['last_id'];
         }
         
         return $this;
     }
     
-    /* Desc: Select product by id paramater and load object
-     * param: id of product to load
+    /**
+     * Select product by id parameter and load object.
+     * @param id The ID of product to load.
      */
     public function load($id) {
-        // Get DB connection instance
-        if(is_null($this->dbConn)) {
-            $this->dbConn = PdoDbConn::getInstance();
-        }
+        $dbConn = PdoDbConn::getInstance();
         
         $query = "SELECT `name`, pet_type, item_type, color, lifespan, age, `price` FROM "
-            . $this->getDbNameTbl() . " WHERE `id` = " . $id;
-        $r = $this->dbConn->doQuery($query);
+            . $this->getDbNameTbl() . " WHERE `id` = :id";
         
-        if(!is_array($r) || empty($r)) {
+        $ds = $dbConn->doParaSelectQry($query, array('id' => $id));
+        
+        if(!is_array($ds) || empty($ds)) {
             throw new \Exception("Product id " . $id . " not found.");
         }
+        
+        // Get (only) row
+        $r = $ds[0];
         
         $this->id = $id;
         $this->name = $r['name'];
@@ -129,18 +86,18 @@ class ModelProduct
         return $this;
     }
     
-    public function deleteAndUnload() {
+    /**
+     * Deletes product model entity that has been loaded with ->load($id)
+     * and resets product attributes to null.
+     */
+    public function delete() {
         if(isset($this->id)) {
+            $dbConn = PdoDbConn::getInstance();
             $query = "DELETE FROM " . $this->getDbNameTbl() . " WHERE `id` = " . $this->id;
-            $this->dbConn->doParaManipQry($query);
+            $dbConn->doParaManipQry($query);
         }
-        $this->petType = null;
-        $this->itemType = null;
-        $this->name = null;
-        $this->color = null;
-        $this->lifespan = null;
-        $this->age = null;
-        $this->price = null;
+        
+        $this->setData();
     }
     
     private function getDbNameTbl() {

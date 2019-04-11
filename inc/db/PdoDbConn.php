@@ -43,7 +43,7 @@ class PdoDbConn
 
     /**
      * Initialize $this->_conn to an open PDO connection. Should only be called in __construct()
-     * throws Exception on failure
+     * @throws \Exception
      */
     private function openDB() {
         $connString = 'mysql:host='.$this->_host.';dbname='.$this->_db;
@@ -70,11 +70,12 @@ class PdoDbConn
         return $this->_isDbOpen;
     }
     
-    /* doQuery() - PDO Object http://php.net/manual/en/book.pdo.php
-     * Use to query a table for a single row. Does not bind parameters.
+    /**
+     * Use to query a table for a single row. Does not bind parameters. PDO Object http://php.net/manual/en/book.pdo.php
      * Should be called within a try/catch block.
-     * Return: Queried row or false when no row was found.
-     * Throws: Exception on failure */
+     * @return Queried row or false when no row was found.
+     * @throws \Exception
+     */
     public function doQuery($sql){
         try {
             $stmt = $this->_conn->query($sql);
@@ -93,11 +94,12 @@ class PdoDbConn
         return $row;
     }
     
-    /* Performs a parameterized SELECT query.
+    /**
+     * Performs a parameterized SELECT query.
      * $query: SQL query where parameters to be bound are named or question marked
      * $para: An array of the parameters to be bound. If $query uses named parameters, then the array keys much match the named parameters.
-     * Returns: ??
-     * throws Exception on failure
+     * @return array returned from PDOStatement::fetchAll()
+     * @throws \Exception
      */
     public function doParaSelectQry($query, $para = array()) {
         try {
@@ -111,7 +113,7 @@ class PdoDbConn
             throw new \Exception($e->getMessage());
         }
         
-        $rs = $stmt->fetchAll();
+        $rs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();
         
         return $rs;
@@ -122,6 +124,7 @@ class PdoDbConn
      * 
      * @param query SQL query where parameters to be bound are named or question marked
      * @param para An array of the parameters to be bound. If $query uses named parameters, then the array keys much match the named parameters.
+     * @throws \Exception
      */
     public function doParaManipQry($query, $para = array()) {
         try {
