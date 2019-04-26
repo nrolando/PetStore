@@ -8,6 +8,7 @@ use PetStoreInc\db\PdoDbConn;
 
 class ModelProduct extends ModelAbstract
 {
+    private const DB_TBL_NAME = "`";
     private const OLD_PRODUCT_DISCOUNT = .5;
     
     /**
@@ -15,7 +16,7 @@ class ModelProduct extends ModelAbstract
      * @throws \Exception
      */
     public function save() {
-        if(!isset($this->petType) || !isset($this->itemType) || !isset($this->name) || !isset($this->color) || !isset($this->lifespan) || !isset($this->age) || !isset($this->price)) {
+        if(!$this->isAllDataSet()) {
             throw new \Exception("Cannot save product due to insufficient data.");
         }
         
@@ -87,31 +88,60 @@ class ModelProduct extends ModelAbstract
     }
     
     /**
-     * Deletes product model entity that has been loaded with ->load($id)
-     * and resets product attributes to null.
+     * Deletes product with set id, and unset product data.
      */
     public function delete() {
         if(isset($this->id)) {
             $dbConn = PdoDbConn::getInstance();
-            $query = "DELETE FROM " . $this->getDbNameTbl() . " WHERE `id` = " . $this->id;
-            $dbConn->doParaManipQry($query);
+            $query = "DELETE FROM " . $this->getDbNameTbl() . " WHERE `id` = :id";
+            $dbConn->doParaManipQry($query, array('id' => $this->id));
         }
         
         $this->setData();
+    }
+    
+    /**
+     * Deletes product from the database.
+     * @param id product id to delete
+     */
+    public static function deleteId($id) {
+        if(is_string($id) || is_int($id)) {
+            $dbConn = PdoDbConn::getInstance();
+            $query = "DELETE FROM `" . Helper::$dbName . "`.`" . Helper::$tblName_product . "` WHERE `id` = :id";
+            $dbConn->doParaManipQry($query, array('id' => $id));
+        }
     }
     
     private function getDbNameTbl() {
         return "`" . Helper::$dbName . "`.`" . Helper::$tblName_product . "`";
     }
     
-    public function getPrice() {
-        if(!isset($this->lifespan) || $this->lifespan == 0) {
-            return $this->price;
+    public function getCalculatedPrice() {
+        if(!$this->getprice()) {
+            return null;
         }
-        if($this->age > ($this->lifespan/2)) {
-            return ($this->price * self::OLD_PRODUCT_DISCOUNT);
+        // If no lifespan or it is 0, return full price
+        if(!$this->getlifespan() || bccomp($this->lifespan, "0") < 1) {
+            return number_format($this->getprice(), 2);
+        }
+        if(bccomp($this->getage(), bcdiv($this->getlifespan(), "2") === 1)) {
+            return bcmul($this->price, self::OLD_PRODUCT_DISCOUNT, 2);
         } else {
-            return $this->price;
+            return number_format($this->price, 2);
+        }
+    }
+    
+    /**
+     * Determines if object has sufficient data to save/update in the database.
+     * @return boolean
+     */
+    public function isAllDataSet() {
+        // Check this object has set values for id, petType, itemType, name, color, lifespan, age, price
+        if($this->getpetType() && $this->getitemType() && $this->getname()
+            && $this->getcolor() && $this->getlifespan() && $this->getage() && $this->getprice()) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

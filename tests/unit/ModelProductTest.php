@@ -10,4 +10,8 @@ class ModelProductTest extends TestCase
     public function testSetAndGetName() {
         $this->assertTrue(true);
     }
+    
+    public function testYouCantSaveWithoutAllData() {
+        
+    }
 }

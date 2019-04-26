@@ -32,16 +32,13 @@ class ModelAbstract
         switch(substr($method, 0, 3)) {
             case 'get':
                 $key = substr($method, 3);
-                $data = $this->getData($key);
-                return $data;
-
+                return $this->getData($key);
             case 'set':
                 if(!isset($args[0])) {
                     throw new \Exception("No value passed to setter method in " . get_class($this) . "::" . $method . "(" . print_r($args, 1) . ")");
                 }
                 $key = substr($method, 3);
-                $result = $this->setData($key, $args[0]);
-                return $result;
+                return $this->setData($key, $args[0]);
         }
         throw new \Exception("Invalid method " . get_class($this) . "::" . $method . "(" . print_r($args, 1) . ")");
     }
@@ -74,9 +71,9 @@ class ModelAbstract
         
         if(array_key_exists($key, $this->data)) {
             return $this->data[$key];
-        } else {
-            throw new \Exception("No value found for '" . $key . "' in " . get_class($this) . "::" . $method);
         }
+        
+        return null;
     }
 }
 

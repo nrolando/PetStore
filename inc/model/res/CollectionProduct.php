@@ -57,10 +57,6 @@ class CollectionProduct
                 if($this->filters[$key] === false || empty($this->filters[$key])) { throw new \Exception("No filter value provided."); }
             }
         }
-        if(!empty($sortby)) {
-            if(!$this->isSortByValid($sortby)) { throw new \Exception("Invalid Sort By value."); }
-            $this->sortby = $sortby;
-        }
         
         // Build SQL query
         $sql = "SELECT `id`, `name`, pet_type as 'petType', item_type as 'itemType', `color`, `lifespan`, `age`, `price` FROM " 
@@ -74,19 +70,73 @@ class CollectionProduct
             }
             $sql = substr($sql, 0, strrpos($sql, " AND "));
         }
-        if(!empty($this->sortby)) {
-            $sql .= " ORDER BY :sortby";
-            $sqlParamArray['sortby'] = $this->sortby;
-        }
         
         $rs = $this->dbConn->doParaSelectQry($sql, $sqlParamArray);
+        
         foreach($rs as $row) {
             $mp = new ModelProduct();
             $this->_collection[] = $mp->setData($row);
+        }
+        // free-up a potentially large array
+        unset($rs);
+        
+        // Sorting in PHP vs MySQL ORDER BY
+        if(!empty($sortby)) {
+            if(!$this->isSortByValid($sortby)) { throw new \Exception("Invalid Sort By value."); }
+            $this->sortby = $sortby;
+        }
+        $this->sortCollection();
+    }
+    
+    /**
+     * Sorts collection based on $this->sortby attribute
+     * @return boolean true on success or false on failure
+     */
+    private function sortCollection() {
+        if(empty($this->sortby) || count($this->_collection) < 1) {
+            return false;
+        } else {
+            if($this->sortby === 'price') {
+                usort($this->_collection, array($this, "usortByPrice"));
+            } elseif($this->sortby === 'age') {
+                usort($this->_collection, array($this, "usortByAge"));
+            } elseif($this->sortby === 'lifespan') {
+                usort($this->_collection, array($this, "usortByLifespan"));
+            } elseif($this->sortby === 'name') {
+                usort($this->_collection, array($this, "usortByName"));
+            } elseif($this->sortby === 'pet_type') {
+                usort($this->_collection, array($this, "usortByPetType"));
+            } elseif($this->sortby === 'item_type') {
+                usort($this->_collection, array($this, "usortByItemType"));
+            } elseif($this->sortby === 'color') {
+                usort($this->_collection, array($this, "usortByColor"));
+            }
         }
     }
     
     private function getProductModelTblName() {
         return "`" . Helper::$dbName . "`.`" . Helper::$tblName_product . "`";
+    }
+    
+    public static function usortByPrice($a, $b) {
+        return $a->getCalculatedPrice() > $b->getCalculatedPrice();
+    }
+    public static function usortByAge($a, $b) {
+        return (double)$a->getage() > (double)$b->getage();
+    }
+    public static function usortByLifespan($a, $b) {
+        return (double)$a->getlifespan() > (double)$b->getlifespan();
+    }
+    public static function usortByName($a, $b) {
+        return $a->getname() > $b->getname();
+    }
+    public static function usortByPetType($a, $b) {
+        return $a->getpetType() > $b->getpetType();
+    }
+    public static function usortByItemType($a, $b) {
+        return $a->getitemType() > $b->getitemType();
+    }
+    public static function usortByColor($a, $b) {
+        return $a->getcolor() > $b->getcolor();
     }
 }

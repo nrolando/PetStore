@@ -41,6 +41,7 @@ class StoreCli extends CliAbstract
                     'age' => $this->cmdParams[5],
                     'price' => $this->cmdParams[6]
                 ));
+                //echo "Test get: " . $pm->name.'|'.$pm->petType.'|'.$pm->itemType . PHP_EOL;
                 $pm->save();
                 echo "Added product " . $this->cmdParams[2] . PHP_EOL;
                 break;
@@ -60,18 +61,19 @@ class StoreCli extends CliAbstract
                 echo "Updated product " . $this->cmdParams[0] . PHP_EOL;
                 break;
             case 'delete':
-                $pm = new ModelProduct();
-                $pm->load($this->cmdParams[0]);
-                $pm->delete();
+                ModelProduct::deleteId($this->cmdParams[0]);
                 echo "Deleted product " . $this->cmdParams[0] . PHP_EOL;
                 break;
             case 'list':
                 $products = new \PetStoreInc\model\res\CollectionProduct();
                 $products->loadCollection($this->arg_list_filters, $this->arg_list_sort);
                 foreach($products->getCollection() as $prod) {
-                    echo sprintf("%-25s", "Name: " . $prod->getname() . ";") . sprintf("%-20s", "Item Type: " . $prod->getitemType() . ";")
-                        . sprintf("%-20s", "Pet Type: " . $prod->getpetType() . ";") . sprintf("%-15s", "Price: $" . $prod->getPrice() . ";")
-                        . sprintf("%-20s", "Color: " . $prod->getcolor() . ";") . PHP_EOL;
+                    echo sprintf("%-20s", "Item Type: " . $prod->getitemType() . ";")
+                        . sprintf("%-20s", "Pet Type: " . $prod->getpetType() . ";") . sprintf("%-25s", "Name: " . $prod->getname() . ";")
+                        . sprintf("%-20s", "Price: $" . $prod->getCalculatedPrice() . ";")
+                        . sprintf("%-20s", "Color: " . $prod->getcolor() . ";")
+                        . sprintf("%-20s", "Lifespan: " . $prod->getlifespan() . ";")
+                        . sprintf("%-15s", "Age: " . $prod->getage() . ";"). PHP_EOL;
                 }
                 break;
             case 'help':
@@ -93,16 +95,35 @@ class StoreCli extends CliAbstract
             throw new \Exception("Invalid Command '" . $this->cmd . "'.");
         }
         
-        // Validate Command Parameters (minimum validation.. just check for correct number of arguments
+        // Validate Command Parameters
         switch($this->cmd) {
             case 'add':
+                // Param order should be: petType, itemType, name, color, lifespan, age, price
                 if(count($this->cmdParams) !== 7) { $areParamsValid = false; }
+                if(!is_numeric($this->cmdParams[4]) || !is_numeric($this->cmdParams[5]) || !is_numeric($this->cmdParams[6])) {
+                    $areParamsValid = false;
+                }
+                // Do not allow negative values
+                if($this->cmdParams[4][0] === "-" || $this->cmdParams[5][0] === "-" || $this->cmdParams[6][0] === "-") {
+                    $areParamsValid = false;
+                }
                 break;
             case 'update':
+                // Param order should be: id, petType, itemType, name, color, lifespan, age, price
                 if(count($this->cmdParams) !== 8) { $areParamsValid = false; }
+                if(!is_numeric($this->cmdParams[0]) || !is_numeric($this->cmdParams[5]) || !is_numeric($this->cmdParams[6]) || !is_numeric($this->cmdParams[7])) {
+                    $areParamsValid = false;
+                }
+                // Do not allow negative values
+                if($this->cmdParams[5][0] === "-" || $this->cmdParams[6][0] === "-" || $this->cmdParams[7][0] === "-") {
+                    $areParamsValid = false;
+                }
                 break;
             case 'delete':
                 if(count($this->cmdParams) !== 1) { $areParamsValid = false; }
+                if(!is_numeric($this->cmdParams[0])) {
+                    $areParamsValid = false;
+                }
                 break;
             case 'list':
                 // 'list' can come with a 'sort' and/or 'filter parameter
