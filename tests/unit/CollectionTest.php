@@ -9,6 +9,6 @@ class CollectionTest extends TestCase
 {
     /** @test */
     public function instantiatedCollectionReturnsNoItems() {
-        
+        $this->assertTrue(true);
     }
 }

@@ -11,7 +11,5 @@ class ModelProductTest extends TestCase
         $this->assertTrue(true);
     }
     
-    public function testYouCantSaveWithoutAllData() {
-        
-    }
+    //public function testYouCantSaveWithoutAllData() { }
 }

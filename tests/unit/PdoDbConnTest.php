@@ -3,15 +3,32 @@
  * Code by: Nick Rolando
  */
 
+use PetStoreInc\db\PdoDbConn;
+//use PetStoreInc\model\ModelProduct;
 use PHPUnit\Framework\TestCase;
 
 class PdoDbConnTest extends TestCase
 {
     /**
-     * How can we test that multiple calls to DB operations are loading a singleton instance?
+     * Test that the PdoDbConn is a singleton class, and that multiple instances cannot be created
      * 
      */
-    public function testSingleton() {
+    public function testIsSingleton() {
+        $dbConn1 = PdoDbConn::getInstance();
+        $dbConn2 = PdoDbConn::getInstance();
         
+        // Assert the two variables above are referencing the same object
+        $this->assertEquals(true, $this->areInstancesTheSame($dbConn1, $dbConn2));
+    }
+    
+    public function testCanSelectFromDb() {
+        $dbConn1 = PdoDbConn::getInstance();
+        $r = $dbConn1->doQuery("SELECT * FROM `pet_store`.`products` LIMIT 0, 1");
+        $rid = intval($r["id"]);
+        $this->assertTrue($rid > 0);
+    }
+    
+    private function areInstancesTheSame(&$obj1, &$obj2) {
+        return $obj1 === $obj2;
     }
 }
