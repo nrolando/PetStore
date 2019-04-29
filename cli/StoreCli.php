@@ -33,15 +33,14 @@ class StoreCli extends CliAbstract
             case 'add':
                 $pm = new ModelProduct();
                 $pm->setData(array(
-                    'petType' => $this->cmdParams[0],
-                    'itemType' => $this->cmdParams[1],
+                    'pet_type' => $this->cmdParams[0],
+                    'item_type' => $this->cmdParams[1],
                     'name' => $this->cmdParams[2],
                     'color' => $this->cmdParams[3],
                     'lifespan' => $this->cmdParams[4],
                     'age' => $this->cmdParams[5],
                     'price' => $this->cmdParams[6]
                 ));
-                //echo "Test get: " . $pm->name.'|'.$pm->petType.'|'.$pm->itemType . PHP_EOL;
                 $pm->save();
                 echo "Added product " . $this->cmdParams[2] . PHP_EOL;
                 break;
@@ -49,8 +48,8 @@ class StoreCli extends CliAbstract
                 $pm = new ModelProduct();
                 $pm->load($this->cmdParams[0]);
                 $pm->setData(array(
-                    'petType' => $this->cmdParams[1],
-                    'itemType' => $this->cmdParams[2],
+                    'pet_type' => $this->cmdParams[1],
+                    'item_type' => $this->cmdParams[2],
                     'name' => $this->cmdParams[3],
                     'color' => $this->cmdParams[4],
                     'lifespan' => $this->cmdParams[5],
@@ -68,8 +67,8 @@ class StoreCli extends CliAbstract
                 $products = new \PetStoreInc\model\res\CollectionProduct();
                 $products->loadCollection($this->arg_list_filters, $this->arg_list_sort);
                 foreach($products->getCollection() as $prod) {
-                    echo sprintf("%-20s", "Item Type: " . $prod->getitemType() . ";")
-                        . sprintf("%-20s", "Pet Type: " . $prod->getpetType() . ";") . sprintf("%-25s", "Name: " . $prod->getname() . ";")
+                    echo sprintf("%-20s", "Item Type: " . $prod->getitem_type() . ";")
+                        . sprintf("%-20s", "Pet Type: " . $prod->getpet_type() . ";") . sprintf("%-25s", "Name: " . $prod->getname() . ";")
                         . sprintf("%-20s", "Price: $" . $prod->getCalculatedPrice() . ";")
                         . sprintf("%-20s", "Color: " . $prod->getcolor() . ";")
                         . sprintf("%-20s", "Lifespan: " . $prod->getlifespan() . ";")
@@ -98,7 +97,7 @@ class StoreCli extends CliAbstract
         // Validate Command Parameters
         switch($this->cmd) {
             case 'add':
-                // Param order should be: petType, itemType, name, color, lifespan, age, price
+                // Param order should be: pet_type, item_type, name, color, lifespan, age, price
                 if(count($this->cmdParams) !== 7) { $areParamsValid = false; }
                 if(!is_numeric($this->cmdParams[4]) || !is_numeric($this->cmdParams[5]) || !is_numeric($this->cmdParams[6])) {
                     $areParamsValid = false;
@@ -109,7 +108,7 @@ class StoreCli extends CliAbstract
                 }
                 break;
             case 'update':
-                // Param order should be: id, petType, itemType, name, color, lifespan, age, price
+                // Param order should be: id, pet_type, item_type, name, color, lifespan, age, price
                 if(count($this->cmdParams) !== 8) { $areParamsValid = false; }
                 if(!is_numeric($this->cmdParams[0]) || !is_numeric($this->cmdParams[5]) || !is_numeric($this->cmdParams[6]) || !is_numeric($this->cmdParams[7])) {
                     $areParamsValid = false;

@@ -28,8 +28,8 @@ class ModelProduct extends ModelAbstract
                 . "lifespan = :lifespan, age = :age, price = :price WHERE `id` = " . $this->id;
             $dbConn->doParaManipQry($query, array(
                 'name' => $this->name,
-                'petType' => $this->petType,
-                'itemType' => $this->itemType,
+                'petType' => $this->pet_type,
+                'itemType' => $this->item_type,
                 'color' => $this->color,
                 'lifespan' => $this->lifespan,
                 'age' => $this->age,
@@ -41,8 +41,8 @@ class ModelProduct extends ModelAbstract
                 . "VALUES(:name, :petType, :itemType, :color, :lifespan, :age, :price)";
             $dbConn->doParaManipQry($query, array(
                 'name' => $this->name,
-                'petType' => $this->petType,
-                'itemType' => $this->itemType,
+                'petType' => $this->pet_type,
+                'itemType' => $this->item_type,
                 'color' => $this->color,
                 'lifespan' => $this->lifespan,
                 'age' => $this->age,
@@ -77,8 +77,8 @@ class ModelProduct extends ModelAbstract
         
         $this->id = $id;
         $this->name = $r['name'];
-        $this->petType = $r['pet_type'];
-        $this->itemType = $r['item_type'];
+        $this->pet_type = $r['pet_type'];
+        $this->item_type = $r['item_type'];
         $this->color = $r['color'];
         $this->lifespan = $r['lifespan'];
         $this->age = $r['age'];
@@ -136,8 +136,8 @@ class ModelProduct extends ModelAbstract
      * @return boolean
      */
     public function isAllDataSet() {
-        // Check this object has set values for id, petType, itemType, name, color, lifespan, age, price
-        if($this->getpetType() && $this->getitemType() && $this->getname()
+        // Check this object has set values for id, pet_type, item_type, name, color, lifespan, age, price
+        if($this->getpet_type() && $this->getitem_type() && $this->getname()
             && $this->getcolor() && $this->getlifespan() && $this->getage() && $this->getprice()) {
             return true;
         } else {

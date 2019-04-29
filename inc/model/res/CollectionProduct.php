@@ -59,7 +59,7 @@ class CollectionProduct
         }
         
         // Build SQL query
-        $sql = "SELECT `id`, `name`, pet_type as 'petType', item_type as 'itemType', `color`, `lifespan`, `age`, `price` FROM " 
+        $sql = "SELECT `id`, `name`, pet_type, item_type, `color`, `lifespan`, `age`, `price` FROM " 
             . $this->getProductModelTblName() . " ";
         $sqlParamArray = array();
         if(!empty($this->filters)) {
@@ -131,10 +131,10 @@ class CollectionProduct
         return $a->getname() > $b->getname();
     }
     public static function usortByPetType($a, $b) {
-        return $a->getpetType() > $b->getpetType();
+        return $a->getpet_type() > $b->getpet_type();
     }
     public static function usortByItemType($a, $b) {
-        return $a->getitemType() > $b->getitemType();
+        return $a->getitem_type() > $b->getitem_type();
     }
     public static function usortByColor($a, $b) {
         return $a->getcolor() > $b->getcolor();
