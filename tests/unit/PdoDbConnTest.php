@@ -3,15 +3,13 @@
  * Code by: Nick Rolando
  */
 
-use PetStoreInc\db\PdoDbConn;
-//use PetStoreInc\model\ModelProduct;
 use PHPUnit\Framework\TestCase;
+use PetStoreInc\db\PdoDbConn;
 
 class PdoDbConnTest extends TestCase
 {
     /**
      * Test that the PdoDbConn is a singleton class, and that multiple instances cannot be created
-     * 
      */
     public function testIsSingleton() {
         $dbConn1 = PdoDbConn::getInstance();
