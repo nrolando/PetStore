@@ -23,7 +23,6 @@ class ModelProductTest extends TestCase
         $mp->setData('item_type', $itemType);
         $mp->name = $name;
         $mp->setData(array(
-            "color" => $color,
             "lifespan" => $lifespan,
             "age" => $age,
             "price" => $price
@@ -32,12 +31,16 @@ class ModelProductTest extends TestCase
         $this->assertTrue($mp->getpet_type() === $petType);
         $this->assertTrue($mp->getData('item_type') === $itemType);
         $this->assertTrue($mp->name === $name);
-        $this->assertTrue($mp->getData('color') === $color);
         $this->assertTrue($mp->getData('lifespan') === $lifespan);
         $this->assertTrue($mp->getData('age') === $age);
         $this->assertTrue($mp->getData('price') === $price);
         
-        $this->assertTrue($mp->isAllDataSet() === true);
+        // `color` attribute is not set
+        $this->assertTrue($mp->isAllDataSet() === false);
+        
+        // Now set `color` and test again
+        $mp->setData('color', $color);
+        $this->assertTrue($mp->isAllDataSet());
     }
     
     /**

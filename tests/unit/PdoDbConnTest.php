@@ -16,7 +16,7 @@ class PdoDbConnTest extends TestCase
         $dbConn2 = PdoDbConn::getInstance();
         
         // Assert the two variables above are referencing the same object
-        $this->assertEquals(true, $this->areInstancesTheSame($dbConn1, $dbConn2));
+        $this->assertTrue($this->areInstancesTheSame($dbConn1, $dbConn2));
     }
     
     public function testCanSelectFromDb() {
