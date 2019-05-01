@@ -124,6 +124,7 @@ class ModelProduct extends ModelAbstract
         if(!$this->getlifespan() || bccomp($this->lifespan, "0") < 1) {
             return number_format($this->getprice(), 2);
         }
+        // If age is >= half of the lifespan, then give discounted price
         if(bccomp($this->getage(), bcdiv($this->getlifespan(), "2", 2), 2) >= 0) {
             return bcmul($this->price, self::OLD_PRODUCT_DISCOUNT, 2);
         } else {
