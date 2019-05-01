@@ -44,24 +44,30 @@ class ModelAbstract
     }
     
     /**
-     * Set model attribute(s). If no values passed, set $this->data to empty array.
-     * @param key Must be string or array. If array, the array will overwrite $this->data entirely.
+     * Set model attribute(s).
+     * @param key Must be string or array.
      * @return $this
      * @throws \Exception
      */
-    public function setData($key = null, $v = null) {
-        if(is_null($key)) {
-            $this->data = array();
-        }
-        if(is_array($key)) {
-            $this->data = $key;
-        } elseif(is_string($key) || is_int($key)) {
-            $this->data[$key] = $v;
+    public function setData($p_key, $p_val = null) {
+        if(is_array($p_key)) {
+            foreach($p_key as $k => $v) {
+                $this->data[$k] = $v;
+            }
+        } elseif(is_string($p_key) || is_int($p_key)) {
+            $this->data[$p_key] = $p_val;
         } else {
             throw new \Exception("Invalid parameter type passed to " . get_class($this) . "::" . $method);
         }
         
         return $this;
+    }
+    
+    /**
+     * Sets $this->data to an empty array.
+     */
+    public function clearData() {
+        $this->data = array();
     }
     
     public function getData(string $key = null) {
