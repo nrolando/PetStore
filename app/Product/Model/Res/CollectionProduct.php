@@ -24,7 +24,7 @@ class CollectionProduct
         $this->_collection = $p_products;
         
         $this->validFilterKeys = array('pet_type', 'item_type', 'color');
-        $this->validSortBy = array('pet_type', 'item_type', 'name', 'color', 'lifespan', 'age', 'price');
+        $this->validSortBy = array('id', 'pet_type', 'item_type', 'name', 'color', 'lifespan', 'age', 'price');
     }
     
     public function getCollection() {
