@@ -2,11 +2,13 @@
 /**
  * Code by: Nick Rolando
  */
-namespace PetStoreInc\model;
-use PetStoreInc\Helper;
+namespace PetStoreApp\Product\Model;
+use PetStoreApp\Core\Model\db;
+use PetStoreApp\Core\Model;
+use PetStoreApp\Core;
 use PetStoreInc\db\PdoDbConn;
 
-class ModelProduct extends ModelAbstract
+class ModelProduct extends \PetStoreApp\Core\Model\ModelAbstract
 {
     private const DB_TBL_NAME = "`";
     private const OLD_PRODUCT_DISCOUNT = .5;
@@ -107,13 +109,13 @@ class ModelProduct extends ModelAbstract
     public static function deleteId($id) {
         if(is_string($id) || is_int($id)) {
             $dbConn = PdoDbConn::getInstance();
-            $query = "DELETE FROM `" . Helper::$dbName . "`.`" . Helper::$tblName_product . "` WHERE `id` = :id";
+            $query = "DELETE FROM `" . \PetStoreApp\Core\Helper::$dbName . "`.`" . \PetStoreApp\Core\Helper::$tblName_product . "` WHERE `id` = :id";
             $dbConn->doParaManipQry($query, array('id' => $id));
         }
     }
     
     private function getDbNameTbl() {
-        return "`" . Helper::$dbName . "`.`" . Helper::$tblName_product . "`";
+        return "`" . \PetStoreApp\Core\Helper::$dbName . "`.`" . \PetStoreApp\Core\Helper::$tblName_product . "`";
     }
     
     public function getCalculatedPrice() {

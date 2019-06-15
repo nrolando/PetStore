@@ -2,7 +2,7 @@
 /**
  * Code by: Nick Rolando
  */
-namespace PetStoreInc\model;
+namespace PetStoreApp\Core\Model;
 
 class ModelAbstract
 {

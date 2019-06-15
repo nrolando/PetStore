@@ -1,7 +1,7 @@
 <?php
 /* Code by: Nick Rolando */
-namespace PetStoreInc\db;
-use PetStoreInc\Helper;
+namespace PetStoreApp\Core\Model\db;
+use PetStoreApp\Core\Helper;
 
 /* Description: Implements mysql PDO functionality. */
 class PdoDbConn

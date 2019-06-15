@@ -1,5 +1,5 @@
 <?php
-namespace PetStoreInc;
+namespace PetStoreApp\Core;
 
 class Helper
 {
@@ -12,7 +12,7 @@ class Helper
     /**
      * echo help text
      */
-    public static function runHelp() {
+    public static function runCliHelp() {
         echo "Usage: php cli/StoreCli.php --[command] [optional parameter 1] [optional parameter 2] [etc..]" . PHP_EOL;
         echo "Valid Commands: add, update, delete, list." . PHP_EOL;
         echo "Params for `add`: pet_type, item_type, name, color, lifespan, age, price" . PHP_EOL;

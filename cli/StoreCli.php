@@ -5,8 +5,9 @@
  */
 namespace PetStoreCli;
 require_once dirname(__dir__) . '\vendor\autoload.php';
-use PetStoreInc\Helper;
-use PetStoreInc\model\ModelProduct;
+use PetStoreApp\Core\Helper;
+use PetStoreApp\Product\Model\ModelProduct;
+use PetStoreApp\Product\Model\Res\CollectionProduct;
 
 class StoreCli extends CliAbstract
 {
@@ -64,7 +65,7 @@ class StoreCli extends CliAbstract
                 echo "Deleted product " . $this->cmdParams[0] . PHP_EOL;
                 break;
             case 'list':
-                $products = new \PetStoreInc\model\res\CollectionProduct();
+                $products = new CollectionProduct();
                 $products->loadCollection($this->arg_list_filters, $this->arg_list_sort);
                 foreach($products->getCollection() as $prod) {
                     echo sprintf("%-20s", "Item Type: " . $prod->getitem_type() . ";")
@@ -76,7 +77,7 @@ class StoreCli extends CliAbstract
                 }
                 break;
             case 'help':
-                Helper::runHelp();
+                Helper::runCliHelp();
                 break;
             default:
                 break;
@@ -162,6 +163,6 @@ try {
     $sc->run();
 } catch(\Exception $e) {
     echo "Error: " . $e->getMessage() . PHP_EOL;
-    Helper::runHelp();
+    Helper::runCliHelp();
 }
 echo "Goodbye" . PHP_EOL;

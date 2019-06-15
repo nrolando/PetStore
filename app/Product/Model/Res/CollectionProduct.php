@@ -1,8 +1,8 @@
 <?php
-namespace PetStoreInc\model\res;
-use PetStoreInc\Helper;
-use PetStoreInc\db\PdoDbConn;
-use PetStoreInc\model\ModelProduct;
+namespace PetStoreApp\Product\Model\Res;
+use PetStoreApp\Core\Model\db\PdoDbConn;
+use PetStoreApp\Core\Helper;
+use PetStoreApp\Product\Model\ModelProduct;
 
 class CollectionProduct
 {

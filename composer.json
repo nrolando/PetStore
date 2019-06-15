@@ -2,7 +2,9 @@
     "autoload": {
         "psr-4": {
             "PetStoreCli\\": "cli/",
-            "PetStoreInc\\": "inc/"
+            "PetStoreInc\\": "inc/",
+            "PetStoreApp\\": "app/",
+            "PetStoreApi\\": "api"
         }
     },
     "require-dev": {
